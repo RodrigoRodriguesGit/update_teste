@@ -41,6 +41,10 @@ function loadCategories(file: Express.Multer.File): Promise<Upload[]> {
   });
 }
 
+app.get('/teste', async (req, res) => {
+  res.json({ message: 'success!' });
+});
+
 app.post('/uploadCSV', upload.single('file'), async (request, response) => {
   const { file } = request;
   const categories = await loadCategories(file);
