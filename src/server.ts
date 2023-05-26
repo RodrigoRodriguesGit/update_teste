@@ -2,6 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import fs from 'fs';
 import csvParse from 'csv-parser';
+import { Server } from 'http';
 
 // Antigo para teste, primeira forma
 const upload = multer({
@@ -59,7 +60,9 @@ app.post('/uploadCSV', upload.single('file'), async (request, response) => {
 
 app.post('/upload', upload.single('file'), async (request, response) => {
   const { file } = request;
-  response.send(file);
+  setTimeout(() => {
+    response.send(file);
+  }, 30000);
 });
 
 app.listen(3000, () => {
