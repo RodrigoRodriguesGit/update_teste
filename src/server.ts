@@ -64,7 +64,7 @@ app.post('/upload', upload.single('file'), async (request, response) => {
   // request.setTimeout(10 * 80 * 100);
   setTimeout(() => {
     response.send(file);
-  }, 10000);
+  }, 60000);
 });
 
 app.listen(3000, () => {
