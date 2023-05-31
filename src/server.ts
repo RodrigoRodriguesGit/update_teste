@@ -61,7 +61,7 @@ app.post('/uploadCSV', upload.single('file'), async (request, response) => {
 app.post('/upload', upload.single('file'), async (request, response) => {
   // request.setTimeout(80000);
   const { file } = request;
-  request.setTimeout(10 * 80 * 100);
+  request.setTimeout(10 * 100 * 100);
   response.send(file);
 });
 
