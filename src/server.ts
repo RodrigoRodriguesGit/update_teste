@@ -61,10 +61,14 @@ app.post('/uploadCSV', upload.single('file'), async (request, response) => {
 app.post('/upload', upload.single('file'), async (request, response) => {
   // request.setTimeout(80000);
   const { file } = request;
-  request.setTimeout(10 * 100 * 100);
+  // request.setTimeout(10 * 100 * 100);
+  // setTimeout(() => {
+  //  response.send(file);
+  // }, 60000);
   response.send(file);
 });
 
 app.listen(3000, () => {
+  // eslint-disable-next-line no-console
   console.log('🏃 Running Server');
 });
