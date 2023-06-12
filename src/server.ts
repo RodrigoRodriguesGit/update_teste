@@ -2,7 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import fs from 'fs';
 import csvParse from 'csv-parser';
-import { Server } from 'http';
+import os from 'os';
 
 // Antigo para teste, primeira forma
 const upload = multer({
@@ -59,16 +59,26 @@ app.post('/uploadCSV', upload.single('file'), async (request, response) => {
 // });
 
 app.post('/upload', upload.single('file'), async (request, response) => {
-  // request.setTimeout(80000);
   const { file } = request;
-  // request.setTimeout(10 * 100 * 100);
-  // setTimeout(() => {
-  //  response.send(file);
-  // }, 60000);
+  // eslint-disable-next-line global-require, no-console
+  console.log(`Nome da máquina: ${os.hostname}`);
+  console.log(`Arquitetura: ${os.arch}`);
+  console.log(`Memória livre: ${os.freemem() / 1024 / 1024}`);
+  console.log(`Plataforma: ${os.platform}`);
+  console.log(`Versão: ${os.version}`);
+  console.log(`Total da Memória: ${os.totalmem() / 1024 / 1024}`);
+  console.log(
+    `%: ${os.freemem() / 1024 / 1024 / (os.totalmem() / 1024 / 1024)}`,
+  );
+
+  const up = os.uptime() / 60 / 60 / 24;
+
+  console.log(`Uptime: ${up}`);
+
   response.send(file);
 });
 
 app.listen(3000, () => {
   // eslint-disable-next-line no-console
-  console.log('🏃 Running Server');
+  console.log('🏃 Servidor Conectado!');
 });
