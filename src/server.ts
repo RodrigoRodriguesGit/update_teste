@@ -1,7 +1,8 @@
-import express from 'express';
+// import csvParse from 'csv-parser';
+// import fs from 'fs';
+/* eslint-disable no-console */
 import multer from 'multer';
-import fs from 'fs';
-import csvParse from 'csv-parser';
+import express from 'express';
 import os from 'os';
 
 // Antigo para teste, primeira forma
@@ -16,7 +17,7 @@ interface Upload {
   description: string;
 }
 
-function loadCategories(file: Express.Multer.File): Promise<Upload[]> {
+/* function loadCategories(file: Express.Multer.File): Promise<Upload[]> {
   return new Promise((resolver, reject) => {
     const stream = fs.createReadStream(file.path);
 
@@ -40,17 +41,17 @@ function loadCategories(file: Express.Multer.File): Promise<Upload[]> {
         reject(err);
       });
   });
-}
+} */
 
 app.get('/teste', async (req, res) => {
   res.json({ message: 'success!' });
 });
 
-app.post('/uploadCSV', upload.single('file'), async (request, response) => {
+/* app.post('/uploadCSV', upload.single('file'), async (request, response) => {
   const { file } = request;
   const categories = await loadCategories(file);
   response.send(categories);
-});
+}); */
 
 // app.post('/uploadCSV', upload.single('file'), async (request, response) => {
 // const { file } = request;
