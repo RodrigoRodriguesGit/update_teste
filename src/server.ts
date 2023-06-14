@@ -5,7 +5,7 @@ import multer from 'multer';
 import express from 'express';
 import os from 'os';
 import osUtils from 'os-utils';
-import piusage from 'pidusage';
+import process from 'process';
 
 const upload = multer({
   dest: './tmp',
@@ -17,19 +17,6 @@ interface Upload {
   name: string;
   description: string;
 }
-
-let cpuUsage = 0;
-
-const updateCpuUsage = () => {
-  const pidusage = require('pidusage');
-  pidusage(process.pid, (err: any, stats: { cpu: number }) => {
-    if (err) {
-      console.error(`Erro ao obter o uso da CPU: ${err}`);
-      return;
-    }
-    cpuUsage = stats.cpu;
-  });
-};
 
 function formatBytes(bytes: number) {
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
@@ -61,11 +48,19 @@ app.get('/monitoramento', async (req, res) => {
     console.log(`CPU Usage (%): ${(v * 100).toFixed(1)}`);
   });
 
-  const freeMemory = formatBytes(osUtils.freememPercentage());
+  const freeMemory = osUtils.freememPercentage().toFixed(1);
+  const UsoMemoriaResidenteTotal = formatBytes(process.memoryUsage().rss);
+  const TamanhoTotalMemoria = formatBytes(process.memoryUsage().heapTotal);
+  const QtdMemoriaEmUso = formatBytes(process.memoryUsage().heapUsed);
+  const QtdMemoriaAlocada = formatBytes(process.memoryUsage().external);
 
   const performanceData = {
     UsoCPU,
     freeMemory,
+    UsoMemoriaResidenteTotal,
+    TamanhoTotalMemoria,
+    QtdMemoriaEmUso,
+    QtdMemoriaAlocada,
   };
 
   res.json(performanceData);

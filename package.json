@@ -36,6 +36,7 @@
     "os-utils": "^0.0.14",
     "pg": "^8.2.1",
     "pidusage": "^3.0.2",
+    "process": "^0.11.10",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.2.25",
     "uuidv4": "^6.0.7"
