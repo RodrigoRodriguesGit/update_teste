@@ -74,7 +74,6 @@ app.post('/upload', upload.single('file'), async (request, response) => {
   const freeMemory = os.freemem();
   const usedMemory = totalMemory - freeMemory;
 
-  // Obter informações sobre a CPU
   const cpuCount = os.cpus().length;
   const cpuModel = os.cpus()[0].model;
 
@@ -85,7 +84,24 @@ app.post('/upload', upload.single('file'), async (request, response) => {
   console.log(`Memória utilizada: ${formatBytes(usedMemory)}`);
   console.log(`Memória livre: ${formatBytes(freeMemory)}`);
 
-  response.send(file);
+  const memoryBefore = process.memoryUsage().heapUsed;
+  const memoryAfter = process.memoryUsage().heapUsed;
+  const memoryUsed = memoryAfter - memoryBefore;
+
+  console.log(
+    `Uso da memória ao iniciar o processo de upload ${formatBytes(
+      memoryBefore,
+    )}`,
+  );
+  console.log(
+    `Uso da memória ao final o processo de upload ${formatBytes(memoryAfter)}`,
+  );
+
+  console.log(`Uso da memória ${formatBytes(memoryUsed)}`);
+
+  response.json({ memoryUsed });
+
+  // response.send(file);
 });
 
 app.listen(3000, () => {
