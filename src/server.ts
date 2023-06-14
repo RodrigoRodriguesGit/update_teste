@@ -1,11 +1,12 @@
-// import csvParse from 'csv-parser';
-// import fs from 'fs';
+/* eslint-disable func-names */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable no-console */
 import multer from 'multer';
 import express from 'express';
 import os from 'os';
+import osUtils from 'os-utils';
+import piusage from 'pidusage';
 
-// Antigo para teste, primeira forma
 const upload = multer({
   dest: './tmp',
 });
@@ -17,64 +18,77 @@ interface Upload {
   description: string;
 }
 
-/* function loadCategories(file: Express.Multer.File): Promise<Upload[]> {
-  return new Promise((resolver, reject) => {
-    const stream = fs.createReadStream(file.path);
+let cpuUsage = 0;
 
-    const parseFile = csvParse();
-
-    stream.pipe(parseFile);
-
-    const categories: Upload[] = [];
-
-    parseFile
-      .on('data', async line => {
-        // eslint-disable-next-line no-console
-        console.log(line);
-        const { name, description } = line;
-        categories.push({ description, name });
-      })
-      .on('end', () => {
-        resolver(categories);
-      })
-      .on('error', err => {
-        reject(err);
-      });
+const updateCpuUsage = () => {
+  const pidusage = require('pidusage');
+  pidusage(process.pid, (err: any, stats: { cpu: number }) => {
+    if (err) {
+      console.error(`Erro ao obter o uso da CPU: ${err}`);
+      return;
+    }
+    cpuUsage = stats.cpu;
   });
-} */
+};
+
+function formatBytes(bytes: number) {
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+  if (bytes === 0) return '0 Bytes';
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  // eslint-disable-next-line no-restricted-properties
+  return `${parseFloat((bytes / Math.pow(1024, i)).toFixed(2))} ${sizes[i]}`;
+}
 
 app.get('/teste', async (req, res) => {
-  res.json({ message: 'success!' });
+  res.json({ message: `Teste` });
 });
 
-/* app.post('/uploadCSV', upload.single('file'), async (request, response) => {
-  const { file } = request;
-  const categories = await loadCategories(file);
-  response.send(categories);
-}); */
+app.get('/desempenho', async (req, res) => {
+  const performanceData = {
+    plataforma: os.platform(),
+    arquitetura: os.arch(),
+    cpus: os.cpus().length,
+    memoriaTotal: formatBytes(os.totalmem()),
+    memoriaLivre: formatBytes(os.freemem()),
+  };
+  res.json(performanceData);
+});
 
-// app.post('/uploadCSV', upload.single('file'), async (request, response) => {
-// const { file } = request;
-// const categories = await loadCategories(file);
-// response.send(categories);
-// });
+app.get('/monitoramento', async (req, res) => {
+  // const UsoCPU = osUtils.cpuUsage();
+
+  const UsoCPU = osUtils.cpuUsage(function (v) {
+    console.log(`CPU Usage (%): ${(v * 100).toFixed(1)}`);
+  });
+
+  const freeMemory = formatBytes(osUtils.freememPercentage());
+
+  const performanceData = {
+    UsoCPU,
+    freeMemory,
+  };
+
+  res.json(performanceData);
+});
 
 app.post('/upload', upload.single('file'), async (request, response) => {
   const { file } = request;
   // eslint-disable-next-line global-require, no-console
-  console.log(`Nome da máquina: ${os.hostname}`);
-  console.log(`Arquitetura: ${os.arch}`);
-  console.log(`Memória livre: ${os.freemem() / 1024 / 1024}`);
-  console.log(`Plataforma: ${os.platform}`);
-  console.log(`Versão: ${os.version}`);
-  console.log(`Total da Memória: ${os.totalmem() / 1024 / 1024}`);
-  console.log(
-    `%: ${os.freemem() / 1024 / 1024 / (os.totalmem() / 1024 / 1024)}`,
-  );
 
-  const up = os.uptime() / 60 / 60 / 24;
+  const totalMemory = os.totalmem();
+  const freeMemory = os.freemem();
+  const usedMemory = totalMemory - freeMemory;
 
-  console.log(`Uptime: ${up}`);
+  // Obter informações sobre a CPU
+  const cpuCount = os.cpus().length;
+  const cpuModel = os.cpus()[0].model;
+
+  console.log(`Número de CPUs: ${cpuCount}`);
+  console.log(`Modelo da CPU: ${cpuModel}`);
+
+  console.log(`Total de memória: ${formatBytes(totalMemory)}`);
+  console.log(`Memória utilizada: ${formatBytes(usedMemory)}`);
+  console.log(`Memória livre: ${formatBytes(freeMemory)}`);
 
   response.send(file);
 });
