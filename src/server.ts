@@ -36,6 +36,7 @@ app.get('/desempenho', async (req, res) => {
     arquitetura: os.arch(),
     cpus: os.cpus().length,
     memoriaTotal: formatBytes(os.totalmem()),
+    memoriautilizada: formatBytes(os.totalmem() - os.freemem()),
     memoriaLivre: formatBytes(os.freemem()),
   };
   res.json(performanceData);
@@ -67,36 +68,23 @@ app.get('/monitoramento', async (req, res) => {
 });
 
 app.post('/upload', upload.single('file'), async (request, response) => {
-  const { file } = request;
   // eslint-disable-next-line global-require, no-console
 
-  const totalMemory = os.totalmem();
-  const freeMemory = os.freemem();
-  const usedMemory = totalMemory - freeMemory;
-
-  const cpuCount = os.cpus().length;
-  const cpuModel = os.cpus()[0].model;
-
-  console.log(`Número de CPUs: ${cpuCount}`);
-  console.log(`Modelo da CPU: ${cpuModel}`);
-
-  console.log(`Total de memória: ${formatBytes(totalMemory)}`);
-  console.log(`Memória utilizada: ${formatBytes(usedMemory)}`);
-  console.log(`Memória livre: ${formatBytes(freeMemory)}`);
-
   const memoryBefore = process.memoryUsage().heapUsed;
-  const memoryAfter = process.memoryUsage().heapUsed;
-  const memoryUsed = memoryAfter - memoryBefore;
-
   console.log(
     `Uso da memória ao iniciar o processo de upload ${formatBytes(
       memoryBefore,
     )}`,
   );
+
+  const { file } = request;
+
+  const memoryAfter = process.memoryUsage().heapUsed;
   console.log(
     `Uso da memória ao final o processo de upload ${formatBytes(memoryAfter)}`,
   );
 
+  const memoryUsed = memoryAfter - memoryBefore;
   console.log(`Uso da memória ${formatBytes(memoryUsed)}`);
 
   response.json({ memoryUsed });
