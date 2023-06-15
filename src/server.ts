@@ -87,6 +87,8 @@ app.post('/upload', upload.single('file'), async (request, response) => {
   const memoryUsed = memoryAfter - memoryBefore;
   console.log(`Uso da memória ${formatBytes(memoryUsed)}`); */
 
+  console.log(`Upload efetuado com sucesso`);
+
   response.json({ message: `Upload efetuado com sucesso!` });
 
   // response.send(file);
