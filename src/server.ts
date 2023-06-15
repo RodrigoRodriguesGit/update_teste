@@ -36,7 +36,7 @@ app.get('/desempenho', async (req, res) => {
     arquitetura: os.arch(),
     cpus: os.cpus().length,
     memoriaTotal: formatBytes(os.totalmem()),
-    memoriautilizada: formatBytes(os.totalmem() - os.freemem()),
+    MemoriaUtilizada: formatBytes(os.totalmem() - os.freemem()),
     memoriaLivre: formatBytes(os.freemem()),
   };
   res.json(performanceData);
@@ -70,24 +70,24 @@ app.get('/monitoramento', async (req, res) => {
 app.post('/upload', upload.single('file'), async (request, response) => {
   // eslint-disable-next-line global-require, no-console
 
-  const memoryBefore = process.memoryUsage().heapUsed;
-  console.log(
+  // const memoryBefore = process.memoryUsage().heapUsed;
+  /* console.log(
     `Uso da memória ao iniciar o processo de upload ${formatBytes(
       memoryBefore,
     )}`,
-  );
+  ); */
 
   const { file } = request;
 
-  const memoryAfter = process.memoryUsage().heapUsed;
+  /* const memoryAfter = process.memoryUsage().heapUsed;
   console.log(
     `Uso da memória ao final o processo de upload ${formatBytes(memoryAfter)}`,
   );
 
   const memoryUsed = memoryAfter - memoryBefore;
-  console.log(`Uso da memória ${formatBytes(memoryUsed)}`);
+  console.log(`Uso da memória ${formatBytes(memoryUsed)}`); */
 
-  response.json({ memoryUsed });
+  response.json({ message: `Upload efetuado com sucesso!` });
 
   // response.send(file);
 });
